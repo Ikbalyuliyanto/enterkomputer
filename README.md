@@ -1,8 +1,8 @@
-http://localhost/testapi/api.php?produk => untuk menampilkan produk method -GET.
-http://localhost/testapi/api.php?printer => untuk menampilkan printer method -GET.
-http://localhost/testapi/api.php?meja => untuk menampilkan meja method -GET.
-http://localhost/testapi/api.php?promo => untuk menampilkan promo method -GET.
-http://localhost/testapi/api.php => untuk menambah pesanan method -POST.
+http://localhost/enterkomputer/api.php?produk => untuk menampilkan produk method -GET.
+http://localhost/enterkomputer/api.php?printer => untuk menampilkan printer method -GET.
+http://localhost/enterkomputer/api.php?meja => untuk menampilkan meja method -GET.
+http://localhost/enterkomputer/api.php?promo => untuk menampilkan promo method -GET.
+http://localhost/enterkomputer/api.php => untuk menambah pesanan method -POST.
 {
     "meja_id": 1,
     "pesanan": [
@@ -13,4 +13,4 @@ http://localhost/testapi/api.php => untuk menambah pesanan method -POST.
         { "produk_id": 8, "jumlah": 1 }
     ]
 }
-http://localhost/testapi/api.php?pesanan_id=1 => untuk menampilkan pesanan method -GET.
+http://localhost/enterkomputer/api.php?pesanan_id=1 => untuk menampilkan pesanan method -GET.
