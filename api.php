@@ -184,6 +184,52 @@ switch ($metode) {
             } else {
                 echo json_encode(['status' => 'Pesanan tidak ditemukan']);
             }
+        } else if (isset($_GET['meja_id'])) {
+            // Tambahkan endpoint untuk mendapatkan jumlah pesanan dan detail pesanan di meja tertentu
+            $meja_id = $_GET['meja_id'];
+            
+            // Dapatkan jumlah pesanan di meja tertentu
+            $stmt = $pdo->prepare("SELECT COUNT(*) as jumlah_pesanan FROM pesanan WHERE meja_id = ?");
+            $stmt->execute([$meja_id]);
+            $jumlah_pesanan = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            // Dapatkan detail pesanan di meja tertentu
+            $stmt = $pdo->prepare("SELECT pesanan.id, pesanan.dibuat_pada FROM pesanan WHERE meja_id = ?");
+            $stmt->execute([$meja_id]);
+            $detail_pesanan = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($detail_pesanan as &$pesanan) {
+                $pesanan_id = $pesanan['id'];
+
+                // Ambil item produk
+                $stmt = $pdo->prepare("SELECT produk.nama, produk.varian, item_pesanan.jumlah, produk.harga FROM item_pesanan JOIN produk ON item_pesanan.produk_id = produk.id WHERE item_pesanan.pesanan_id = ?");
+                $stmt->execute([$pesanan_id]);
+                $item_pesanan = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                // Ambil item promo
+                $stmt = $pdo->prepare("SELECT promo.nama AS nama_promo, item_pesanan.jumlah, promo.harga FROM item_pesanan JOIN promo ON item_pesanan.promo_id = promo.id WHERE item_pesanan.pesanan_id = ?");
+                $stmt->execute([$pesanan_id]);
+                $item_promo = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                // Gabungkan item produk dan promo
+                $items = array_merge($item_pesanan, $item_promo);
+                $total_harga = 0;
+    
+                foreach ($items as &$item) {
+                    if (isset($item['harga'])) {
+                        $total_harga += $item['harga'] * $item['jumlah'];
+                    }
+                    unset($item['harga']);
+                }
+
+                $pesanan['items'] = $items;
+                $pesanan['total_harga'] = $total_harga;
+            }
+
+            echo json_encode([
+                'jumlah_pesanan' => $jumlah_pesanan['jumlah_pesanan'],
+                'detail_pesanan' => $detail_pesanan
+            ]);
         } else if (isset($_GET['produk'])) {
             // Tambahkan endpoint untuk mendapatkan data produk
             $stmt = $pdo->prepare("SELECT p.id, p.nama, p.varian, p.harga, c.nama AS kategori 
